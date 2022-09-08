@@ -1,0 +1,79 @@
+# List of libraries
+import sys
+import tweepy
+import logging
+import time
+import json
+
+from credentials import *
+
+class twitter_api_scrap():          
+    
+    def __init__(self,credential):
+        
+        self.running = False       
+                
+      # Create the Twitter Stream object if running variable is False
+        while True:
+           if not self.running: 
+                           
+             self.init(credential)                              
+   
+    def init(self,credential):
+        
+        try:       
+      
+          my_stream= MyStreamListener(credential.consumer_key,
+                                      credential.consumer_secret,
+                                      credential.access_token,
+                                      credential.access_token_secret)           
+
+         # Choose the kind of stream - either bounding box or word track.
+         
+          if credential.search_word:   
+              my_stream.filter(track=[credential.search_word])
+          else:
+             my_stream.filter(locations=credential.bounding_box)
+
+            # Check if the connection stream is active and
+            # break if it is not. init() function will restart
+            # the connection stream.
+            
+          self.running = my_stream.running
+            
+          while True:
+              if not my_stream.running:
+                 self.running = False
+                 time.sleep(60)  # Check each 60 sec.
+              break
+          
+        except Exception as e:
+            logging.error(e)
+            pass               
+        
+  
+class MyStreamListener(tweepy.Stream):   
+    
+    def on_data(self, raw_data):
+        print(raw_data)
+        
+
+    def on_exception(self, exception):
+        logging.error(exception)
+        pass
+
+    def on_connect(self):
+        logging.info('Connection  established!!')
+        pass
+
+    def on_disconnect(self, notice):
+        logging.info('Connection  lost!! : ', notice)
+        pass
+
+    def on_error(self, status):
+        logging.error(status)
+        pass
+              
+        
+      
+    

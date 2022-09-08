@@ -1,0 +1,45 @@
+# List of libraries
+import sys
+import logging
+import multiprocessing
+
+from itertools import repeat
+import os
+import json
+
+from credentials import *
+from crawler.src.twitter_api_scrap import twitter_api_scrap
+
+def warp(args):         
+      
+    twitter_api_scrap(args)
+    
+def main():
+        
+    # Chooses the file path
+    path_home = os.path.dirname(os.path.realpath(__file__)) + '\crawler'   
+    file_name=(path_home + '\setup.json')   
+    
+    # Open the file with the credentials
+    with open(file_name, "r") as read_file:  
+                
+     data = json.load(read_file)       
+     
+     for connections in data['connections']:        
+        credentials_list.append(credentials(connections['user'],
+                                            connections['consumer_key'],
+                                            connections['consumer_secret'],
+                                            connections['access_token'],
+                                            connections['access_token_secret'],
+                                            connections['bounding_box'],
+                                            connections['search_word']))                      
+                                      
+   
+    # Multiprocessing the credentials list informations to twitter_api_scrap   
+    pool = multiprocessing.Pool(len(credentials_list))
+    pool.map(warp,credentials_list)   
+    
+                   
+if __name__ == '__main__':
+    
+    main()

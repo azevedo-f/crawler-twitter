@@ -1,0 +1,15 @@
+{
+    "connections":[
+         {
+             "connection":"1", 
+             "user":"azevedofeer",
+             "consumer_key": "",
+             "consumer_secret": "",
+             "access_token": "",
+             "access_token_secret":"",
+             "bounding_box":"",
+             "search_word":"utfpr,#utfpr"
+         }         
+     ]
+ }
+ 
